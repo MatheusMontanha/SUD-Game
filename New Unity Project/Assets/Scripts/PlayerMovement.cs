@@ -14,46 +14,36 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode right;
     public KeyCode up;
     public KeyCode down;
-    private HashSet<KeyCode> pressedKeys;
+
+    public KeyCode action1;
+    public KeyCode action2;
 
     // Start is called before the first frame update
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+    private PlayerState playerState;
     void Start()
     {
         animator = GetComponent<Animator>();
         myrigidbody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        pressedKeys = new HashSet<KeyCode>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        int countKeys = 0;
 
-        VerifyDownCodes();
-        VerifyUpCodes();
-        VerifyPressedKeys();
-        Debug.Log("aaaa" + pressedKeys.Count.ToString());
-
-
-        if (pressedKeys.Count == 4)
-        {
-            EditorUtility.DisplayDialog("NO", "NO", "OK");
-            pressedKeys.Remove(up);
-        }
         change = new Vector3(0, 0, 0);
-        // if (lastPressedKey == left) && lastPressedKey == right))
-        // {
-        //     change.x = 0;
-        // }
-        // else
-        if (lastPressedKey == left)
+        if (Input.GetKey(left) && Input.GetKey(right))
+        {
+            change.x = 0;
+        }
+        else
+        if (Input.GetKey(left))
         {
             change.x = -1;
         }
-        else if (lastPressedKey == right)
+        else if (Input.GetKey(right))
         {
             change.x = 1;
         }
@@ -62,16 +52,16 @@ public class PlayerMovement : MonoBehaviour
             change.x = 0;
         }
 
-        // if (lastPressedKey == up) && lastPressedKey == down))
-        // {
-        //     change.y = 0;
-        // }
-        // else
-        if (lastPressedKey == down)
+        if (Input.GetKey(up) && Input.GetKey(down))
+        {
+            change.y = 0;
+        }
+        else
+        if (Input.GetKey(down))
         {
             change.y = -1;
         }
-        else if (lastPressedKey == up)
+        else if (Input.GetKey(up))
         {
             change.y = 1;
         }
@@ -80,191 +70,27 @@ public class PlayerMovement : MonoBehaviour
             change.y = 0;
         }
 
-
-        // change.x = Input.GetAxis("Horizontal");
-        // change.y = Input.GetAxis("Vertical");
-
-        UpdateAnimationAndMove();
+        if (Input.GetKeyDown(action2) && playerState!=PlayerState.attack)
+        {
+            Debug.Log("attack");
+            StartCoroutine(AttackCo());
+        }
+        else if (playerState == PlayerState.walk)
+            // Debug.Log("moving");
+            UpdateAnimationAndMove();
     }
 
-    void VerifyDownCodes()
-    {
-        if (Input.GetKeyDown(left) && Input.GetKeyDown(right))
-        {
-            pressedKeys.Add(left);
-            pressedKeys.Add(right);
-        }
-        else if (Input.GetKeyDown(up) && Input.GetKeyDown(down))
-        {
-            pressedKeys.Add(up);
-            pressedKeys.Add(down);
-        }
-        else if (Input.GetKeyDown(right))
-        {
-            pressedKeys.Add(right);
+    private IEnumerator AttackCo(){
+        animator.SetBool("attacking", true);
+        playerState = PlayerState.attack;
+        yield return null;
+        animator.SetBool("attacking", false);
+        yield return new WaitForSeconds(.3f);
+        playerState = PlayerState.walk;
+        
 
-        }
-        else if (Input.GetKeyDown(left))
-        {
-            pressedKeys.Add(left);
-        }
-        else if (Input.GetKeyDown(up))
-        {
-            pressedKeys.Add(up);
-        }
-        else if (Input.GetKeyDown(down))
-        {
-            pressedKeys.Add(down);
-        }
     }
 
-    private KeyCode lastPressedKey;
-    void VerifyPressedKeys()
-    {
-
-
-        switch (pressedKeys.Count)
-        {
-            case 0:
-                lastPressedKey = KeyCode.None;
-                break;
-            case 1:
-                //left
-                if (pressedKeys.Contains(left))
-                {
-                    lastPressedKey = left;
-                }
-                // right
-                else if (pressedKeys.Contains(right))
-                {
-                    lastPressedKey = right;
-                }
-                // up
-                else if (pressedKeys.Contains(up))
-                {
-                    lastPressedKey = up;
-                }
-                // down
-                else if (pressedKeys.Contains(down))
-                {
-                    lastPressedKey = down;
-                }
-                break;
-
-            case 2:
-                // left right
-                if (pressedKeys.Contains(left) && pressedKeys.Contains(right) && !pressedKeys.Contains(up) && !pressedKeys.Contains(down))
-                {
-                    lastPressedKey = KeyCode.None;
-                }
-                //up down
-                else if (!pressedKeys.Contains(left) && !pressedKeys.Contains(right) && pressedKeys.Contains(up) && pressedKeys.Contains(down))
-                {
-                    lastPressedKey = KeyCode.None;
-                }
-                break;
-            case 3:
-                //left right up
-                if (pressedKeys.Contains(left) && pressedKeys.Contains(right) && pressedKeys.Contains(up) && !pressedKeys.Contains(down))
-                {
-                    lastPressedKey = up;
-                }
-                //left right down
-                else if (pressedKeys.Contains(left) && pressedKeys.Contains(right) && !pressedKeys.Contains(up) && pressedKeys.Contains(down))
-                {
-                    lastPressedKey = down;
-                }
-                // left up down
-                else if (pressedKeys.Contains(left) && !pressedKeys.Contains(right) && pressedKeys.Contains(up) && pressedKeys.Contains(down))
-                {
-                    lastPressedKey = left;
-                }
-                //right up down
-                else if (!pressedKeys.Contains(left) && pressedKeys.Contains(right) && pressedKeys.Contains(up) && pressedKeys.Contains(down))
-                {
-                    lastPressedKey = right;
-                }
-                break;
-            case 4:
-                lastPressedKey = KeyCode.None;
-                break;
-        }
-        if (pressedKeys.Count == 0)
-        {
-            lastPressedKey = KeyCode.None;
-        }
-        //left right up
-        else if (pressedKeys.Contains(left) && pressedKeys.Contains(right) && pressedKeys.Contains(up) && !pressedKeys.Contains(down))
-        {
-            lastPressedKey = up;
-        }
-        //left right down
-        else if (pressedKeys.Contains(left) && pressedKeys.Contains(right) && !pressedKeys.Contains(up) && pressedKeys.Contains(down))
-        {
-            lastPressedKey = down;
-        }
-        // left up down
-        else if (pressedKeys.Contains(left) && !pressedKeys.Contains(right) && pressedKeys.Contains(up) && pressedKeys.Contains(down))
-        {
-            lastPressedKey = left;
-        }
-        //right up down
-        else if (!pressedKeys.Contains(left) && pressedKeys.Contains(right) && pressedKeys.Contains(up) && pressedKeys.Contains(down))
-        {
-            lastPressedKey = right;
-        }
-        // left right
-        else if (pressedKeys.Contains(left) && pressedKeys.Contains(right) && !pressedKeys.Contains(up) && !pressedKeys.Contains(down))
-        {
-            lastPressedKey = KeyCode.None;
-        }
-        //up down
-        else if (!pressedKeys.Contains(left) && !pressedKeys.Contains(right) && pressedKeys.Contains(up) && pressedKeys.Contains(down))
-        {
-            lastPressedKey = KeyCode.None;
-        }
-        // left
-        else if (pressedKeys.Contains(left))
-        {
-            lastPressedKey = left;
-        }
-        // right
-        else if (pressedKeys.Contains(right))
-        {
-            lastPressedKey = right;
-        }
-        // up
-        else if (pressedKeys.Contains(up))
-        {
-            lastPressedKey = up;
-        }
-        // down
-        else if (pressedKeys.Contains(down))
-        {
-            lastPressedKey = down;
-        }
-    }
-
-    void VerifyUpCodes()
-    {
-        if (pressedKeys.Contains(right) && Input.GetKeyUp(right))
-        {
-            pressedKeys.Remove(right);
-
-        }
-        if (pressedKeys.Contains(left) && Input.GetKeyUp(left))
-        {
-            pressedKeys.Remove(left);
-        }
-        if (pressedKeys.Contains(up) && Input.GetKeyUp(up))
-        {
-            pressedKeys.Remove(up);
-        }
-        if (pressedKeys.Contains(down) && Input.GetKeyUp(down))
-        {
-            pressedKeys.Remove(down);
-        }
-    }
     void UpdateAnimationAndMove()
     {
         if (change != Vector3.zero)
