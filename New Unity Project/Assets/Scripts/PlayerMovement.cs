@@ -27,6 +27,9 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();
         myrigidbody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator.SetFloat("moveX", 0);
+        animator.SetFloat("moveY", -1);
+        playerState = PlayerState.walk;
     }
 
     // Update is called once per frame
@@ -70,24 +73,26 @@ public class PlayerMovement : MonoBehaviour
             change.y = 0;
         }
 
-        if (Input.GetKeyDown(action2) && playerState!=PlayerState.attack)
+        if (Input.GetKeyDown(action2) && playerState != PlayerState.attack && playerState != PlayerState.stagger)
         {
-            Debug.Log("attack");
             StartCoroutine(AttackCo());
         }
         else if (playerState == PlayerState.walk)
-            // Debug.Log("moving");
+        {
             UpdateAnimationAndMove();
+        }
+
     }
 
-    private IEnumerator AttackCo(){
+    private IEnumerator AttackCo()
+    {
         animator.SetBool("attacking", true);
         playerState = PlayerState.attack;
         yield return null;
         animator.SetBool("attacking", false);
         yield return new WaitForSeconds(.3f);
         playerState = PlayerState.walk;
-        
+
 
     }
 
@@ -110,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
     void StopCharacter()
     {
         myrigidbody.MovePosition(
-                     transform.position + Vector3.zero * speed * Time.deltaTime
+                     transform.position + Vector3.zero
                 );
     }
     void MoveCharacter()
@@ -119,6 +124,20 @@ public class PlayerMovement : MonoBehaviour
             transform.position + change * speed * Time.deltaTime
         );
 
+    }
+
+     public void Knock(float knockTime){
+        playerState=PlayerState.stagger;
+        StartCoroutine(KnockCo(knockTime) );
+    }
+    private IEnumerator KnockCo(float knockTime)
+    {
+        if (myrigidbody != null)
+        {
+            yield return new WaitForSeconds(knockTime);
+            myrigidbody.velocity = Vector2.zero;
+            playerState = PlayerState.walk;
+        }
     }
     private void LateUpdate()
     {

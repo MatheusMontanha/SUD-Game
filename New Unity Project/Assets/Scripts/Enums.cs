@@ -5,5 +5,5 @@ public enum PlayerCode
 }
 
 public enum PlayerState{
-    walk, attack, interact
+    walk, attack, interact, stagger
 }
