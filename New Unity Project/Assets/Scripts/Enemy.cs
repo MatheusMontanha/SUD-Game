@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,30 +18,67 @@ public abstract class Enemy : MonoBehaviour
 
     private Rigidbody2D myRB2D;
     public EnemyState currentState;
-    // Start is called before the first frame update
+
+    public bool strongAgainstMelee;
+    public bool strongAgainstProjectile;
+
+    public bool weakToMelee;
+    public bool weakToProjectile;
+    Color originalColor; 
+    public FloatValue enemyCountdown;
 
     protected void Start()
     {
         myRB2D = GetComponent<Rigidbody2D>();
         health = maxHealth.value;
+        this.originalColor = GetComponent<SpriteRenderer>().color;
     }
 
 
     protected abstract void Die();
-    void TakeDamage(float damage)
+    void TakeDamage(float damage, string collisionTag)
     {
-        health -= damage;
+        if (collisionTag.Contains("Projectile") && strongAgainstProjectile)
+        {
+            health -= damage / 2;
+            Debug.Log("strong");
+        }
+        else if (collisionTag.Contains("Projectile") && weakToProjectile)
+        {
+            health -= damage * 2;
+            Debug.Log("weak");
+        }
+        else if (collisionTag.Contains("Melee") && strongAgainstMelee)
+        {
+            health -= damage / 2;
+            Debug.Log("strong");
+        }
+        else if (collisionTag.Contains("Melee") && weakToMelee)
+        {
+            health -= damage * 2;
+            Debug.Log("weak");
+        }
+        else
+        {
+            health -= damage;
+        }
         if (health <= 0)
         {
             Die();
         }
     }
-    public void TakeHit(float knockTime, float damage)
+
+    internal void AttatchCounter(FloatValue enemyCounter)
     {
-        
-        TakeDamage(damage);
-        if(health>0)
-        Knock(knockTime);
+        this.enemyCountdown = enemyCounter;
+    }
+
+    public void TakeHit(float knockTime, float damage, string collisionTag)
+    {
+
+        TakeDamage(damage, collisionTag);
+        if (health > 0)
+            Knock(knockTime);
     }
 
     private void Knock(float knockTime)
@@ -52,10 +90,16 @@ public abstract class Enemy : MonoBehaviour
     {
         if (myRB2D != null)
         {
+            GetComponent<SpriteRenderer>().color = Color.red;
             yield return new WaitForSeconds(knockTime);
-            Debug.Log("after");
             myRB2D.velocity = Vector2.zero;
             currentState = EnemyState.idle;
+            GetComponent<SpriteRenderer>().color = originalColor;
         }
+    }
+
+    private void LateUpdate()
+    {
+        GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 100);
     }
 }

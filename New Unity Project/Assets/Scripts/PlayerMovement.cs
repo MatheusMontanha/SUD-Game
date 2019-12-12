@@ -25,6 +25,11 @@ public class PlayerMovement : MonoBehaviour
     private PlayerState playerState;
     public FloatValue currentHealth;
     public SSignal playerHealthSignal;
+
+    public GameObject projectile;
+    public bool attackWithProjectile;
+
+    public BooleanValue playerAlive;
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -76,11 +81,19 @@ public class PlayerMovement : MonoBehaviour
             change.y = 0;
         }
 
-        if (Input.GetKeyDown(action2) && playerState != PlayerState.attack && playerState != PlayerState.stagger)
+        if (Input.GetKeyDown(action2) && playerState != PlayerState.attack && playerState != PlayerState.stagger && playerState != PlayerState.firing)
         {
-            StartCoroutine(AttackCo());
+            if (attackWithProjectile)
+            {
+                StartCoroutine(AttackWithProjectileCo());
+            }
+            else
+            {
+
+                StartCoroutine(AttackCo());
+            }
         }
-        else if (playerState == PlayerState.walk)
+        else if (playerState == PlayerState.walk || playerState == PlayerState.firing)
         {
             UpdateAnimationAndMove();
         }
@@ -95,11 +108,19 @@ public class PlayerMovement : MonoBehaviour
             if (currentHealth.value > 0)
             {
                 Knock(knockTime);
-            }else{
-                this.gameObject.SetActive(false);
+            }
+            else
+            {
+                Die();
             }
 
         }
+    }
+    private void Die()
+    {
+        this.playerAlive.value = false;
+        this.gameObject.SetActive(false);
+
     }
 
     private void TakeDamage(float damage)
@@ -107,8 +128,31 @@ public class PlayerMovement : MonoBehaviour
         currentHealth.value -= damage;
         playerHealthSignal.Raise();
 
+    }//AttackWithProjectileCo
+    private IEnumerator AttackWithProjectileCo()
+    {
+        // animator.SetBool("attacking", true);
+        playerState = PlayerState.firing;
+        yield return null;
+        MakeArrow();
+        // animator.SetBool("attacking", false);
+        yield return new WaitForSeconds(.3f);
+        playerState = PlayerState.walk;
     }
 
+    private void MakeArrow()
+    {
+
+        Vector2 temp = new Vector2(animator.GetFloat("moveX"), animator.GetFloat("moveY"));
+        Arrow arrow = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Arrow>();
+        arrow.Setup(temp, ChooseArrowDirection());
+        Destroy(arrow.gameObject, 10f);
+    }
+    Vector3 ChooseArrowDirection()
+    {
+        float temp = Mathf.Atan2(animator.GetFloat("moveY"), animator.GetFloat("moveX")) * Mathf.Rad2Deg;
+        return new Vector3(0, 0, temp);
+    }
     private IEnumerator AttackCo()
     {
         animator.SetBool("attacking", true);
@@ -126,6 +170,8 @@ public class PlayerMovement : MonoBehaviour
         if (change != Vector3.zero)
         {
             MoveCharacter();
+            change.x = Mathf.Round(change.x);
+            change.y = Mathf.Round(change.y);
             animator.SetFloat("moveX", change.x);
             animator.SetFloat("moveY", change.y);
             animator.SetBool("moving", true);

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79c5be7a106e16540abcb579ae73df7f, type: 3}
   m_Name: P1WeaponThrust
   m_EditorClassIdentifier: 
-  initialValue: 9
-  value: 9
+  initialValue: 3
+  value: 3

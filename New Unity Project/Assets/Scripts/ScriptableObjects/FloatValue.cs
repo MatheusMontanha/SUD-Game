@@ -7,6 +7,7 @@ public class FloatValue : ScriptableObject, ISerializationCallbackReceiver
 {
     public FloatValue(float initialValue)
     {
+        this.initialValue = initialValue;
         this.value = initialValue;
     }
     public float initialValue;

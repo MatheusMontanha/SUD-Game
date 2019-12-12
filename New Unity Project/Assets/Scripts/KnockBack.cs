@@ -20,31 +20,32 @@ public class KnockBack : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("breakable") && other.gameObject.tag.Contains("Player"))
-        {
-            other.GetComponent<Pot>().Smash();
-        }
-        if (other.gameObject.CompareTag("enemy") || other.gameObject.tag.Contains("Player"))
-        {
-            Rigidbody2D HIT = other.gameObject.GetComponent<Rigidbody2D>();
-            if (HIT != null)
+            if (other.gameObject.CompareTag("breakable") && other.gameObject.tag.Contains("Player"))
             {
-
-                Vector2 difference = HIT.transform.position - transform.position;
-                difference = difference.normalized * thrust.value;
-                HIT.AddForce(difference, ForceMode2D.Impulse);
-                if (this.tag!="enemy" && other.gameObject.CompareTag("enemy") && other.isTrigger)
-                {
-                    other.GetComponent<Enemy>().TakeHit(knockTime.value, damage.value);
-                }
-                if (!this.tag.Contains("Player") && other.gameObject.tag.Contains("Player"))
-                {
-                    other.GetComponent<PlayerMovement>().TakeHit(knockTime.value, damage.value);
-                }
-
-                // StartCoroutine(KnockCo(HIT));
+                other.GetComponent<Pot>().Smash();
             }
-        }
+            if (this.tag!=other.tag && (other.gameObject.CompareTag("enemy") || other.gameObject.tag.Contains("Player")))
+            {
+                Rigidbody2D HIT = other.gameObject.GetComponent<Rigidbody2D>();
+                if (HIT != null)
+                {
+
+                    Vector2 difference = HIT.transform.position - transform.position;
+                    difference = difference.normalized * thrust.value;
+                        HIT.AddForce(difference, ForceMode2D.Impulse);
+                    if (this.tag != "enemy" && other.gameObject.CompareTag("enemy") && other.isTrigger)
+                    {
+                        other.GetComponent<Enemy>().TakeHit(knockTime.value, damage.value, this.tag);
+                    }
+                    if (!this.tag.Contains("Player") && other.gameObject.tag.Contains("Player"))
+                    {
+
+                        other.GetComponent<PlayerMovement>().TakeHit(knockTime.value, damage.value);
+                    }
+
+                    // StartCoroutine(KnockCo(HIT));
+                }
+            }
     }
 
 }

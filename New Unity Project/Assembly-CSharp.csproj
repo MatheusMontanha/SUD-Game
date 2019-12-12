@@ -53,15 +53,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\ScriptableObjects\Arrow.cs" />
      <Compile Include="Assets\Scripts\CameraMovement.cs" />
      <Compile Include="Assets\Scripts\Enemy.cs" />
      <Compile Include="Assets\Scripts\Enums.cs" />
      <Compile Include="Assets\Scripts\HeartManager.cs" />
      <Compile Include="Assets\Scripts\KnockBack.cs" />
      <Compile Include="Assets\Scripts\Log.cs" />
+     <Compile Include="Assets\Scripts\MainMenu.cs" />
+     <Compile Include="Assets\Scripts\PauseManager.cs" />
      <Compile Include="Assets\Scripts\PlayerHit.cs" />
      <Compile Include="Assets\Scripts\PlayerMovement.cs" />
      <Compile Include="Assets\Scripts\Pot.cs" />
+     <Compile Include="Assets\Scripts\ScriptableObjects\BooleanValue.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\FloatValue.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\Signal.cs" />
      <Compile Include="Assets\Scripts\Sign.cs" />

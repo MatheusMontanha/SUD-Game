@@ -8,6 +8,8 @@ TagManager:
   - Player2
   - breakable
   - enemy
+  - PlayerProjectile
+  - PlayerMelee
   layers:
   - Default
   - TransparentFX
@@ -19,8 +21,8 @@ TagManager:
   - 
   - Enemy
   - Player
-  - 
-  - 
+  - Enemy Projectile
+  - Player Projectile
   - 
   - 
   - 

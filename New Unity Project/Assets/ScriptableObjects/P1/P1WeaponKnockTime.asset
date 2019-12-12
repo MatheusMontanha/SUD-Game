@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79c5be7a106e16540abcb579ae73df7f, type: 3}
   m_Name: P1WeaponKnockTime
   m_EditorClassIdentifier: 
-  initialValue: 0.1
-  value: 0.1
+  initialValue: 0.3
+  value: 0.3

@@ -162,7 +162,7 @@ public class Log : Enemy
         }
 
     }
-    
+
     private void SetAnimFloat(Vector2 vector)
     {
         animator.SetFloat("moveX", vector.x);
@@ -208,64 +208,68 @@ public class Log : Enemy
         logState = LogState.BLOCKED;
         // this.animator.SetBool("dead", true);
         this.gameObject.SetActive(false);
-        if(deathEffect!=null){
-            GameObject effect = Instantiate (deathEffect, transform.position, Quaternion.identity);
+        if (deathEffect != null)
+        {
+            GameObject effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
             Destroy(effect, 1f);
         }
+        Destroy(this.gameObject, 1f);
+        enemyCountdown.value--;
+
     }
 
 
-// void OnCollisionStay2D(Collision2D collision)
-//     {
-//         Collider2D collider = collision.collider;
-//         bool collideFromLeft = false;
-//         bool collideFromTop = false;
-//         bool collideFromRight = false;
-//         bool collideFromBottom = false;
-//         int thisWidth = (int)this.GetComponent<Collider2D>().bounds.size.x;
-//         int thisHeight = (int)this.GetComponent<Collider2D>().bounds.size.y;
-//         int circleRad = (int)collider.bounds.size.x;
-        
+    // void OnCollisionStay2D(Collision2D collision)
+    //     {
+    //         Collider2D collider = collision.collider;
+    //         bool collideFromLeft = false;
+    //         bool collideFromTop = false;
+    //         bool collideFromRight = false;
+    //         bool collideFromBottom = false;
+    //         int thisWidth = (int)this.GetComponent<Collider2D>().bounds.size.x;
+    //         int thisHeight = (int)this.GetComponent<Collider2D>().bounds.size.y;
+    //         int circleRad = (int)collider.bounds.size.x;
 
-//         if (!collider.tag.StartsWith("Player"))
-//         {
 
-//             Vector3 contactPoint = collision.contacts[0].point;
-//             Debug.Log(contactPoint);
-//             Vector3 center = collider.bounds.center;
+    //         if (!collider.tag.StartsWith("Player"))
+    //         {
 
-//             if(contactPoint.y>center.y && contactPoint.x<center.x+thisWidth/2)
-//             if (contactPoint.y > center.y && //checks that circle is on top of rectangle
-//                 (contactPoint.x < center.x + thisWidth / 2 && contactPoint.x > center.x - thisWidth / 2))
-//             {
-//                 collideFromTop = true;
-//             }
-//             else if (contactPoint.y < center.y &&
-//                 (contactPoint.x < center.x + thisWidth / 2 && contactPoint.x > center.x - thisWidth / 2))
-//             {
-//                 collideFromBottom = true;
-//             }
-//             else if (contactPoint.x > center.x &&
-//                 (contactPoint.y < center.y + thisHeight / 2 && contactPoint.y > center.y - thisHeight / 2))
-//             {
-//                 collideFromRight = true;
-//             }
-//             else if (contactPoint.x < center.x &&
-//                 (contactPoint.y < center.y + thisHeight / 2 && contactPoint.y > center.y - thisHeight / 2))
-//             {
-//                 collideFromLeft = true;
-//             }
-//             if (collideFromBottom || collideFromLeft || collideFromRight || collideFromTop)
-//             {
+    //             Vector3 contactPoint = collision.contacts[0].point;
+    //             Debug.Log(contactPoint);
+    //             Vector3 center = collider.bounds.center;
 
-//                 Debug.ClearDeveloperConsole();
-//                 Debug.Log(collideFromLeft);
-//                 Debug.Log(collideFromTop);
-//                 Debug.Log(collideFromRight);
-//                 Debug.Log(collideFromBottom);
-//             }
-//         }
-//     }
+    //             if(contactPoint.y>center.y && contactPoint.x<center.x+thisWidth/2)
+    //             if (contactPoint.y > center.y && //checks that circle is on top of rectangle
+    //                 (contactPoint.x < center.x + thisWidth / 2 && contactPoint.x > center.x - thisWidth / 2))
+    //             {
+    //                 collideFromTop = true;
+    //             }
+    //             else if (contactPoint.y < center.y &&
+    //                 (contactPoint.x < center.x + thisWidth / 2 && contactPoint.x > center.x - thisWidth / 2))
+    //             {
+    //                 collideFromBottom = true;
+    //             }
+    //             else if (contactPoint.x > center.x &&
+    //                 (contactPoint.y < center.y + thisHeight / 2 && contactPoint.y > center.y - thisHeight / 2))
+    //             {
+    //                 collideFromRight = true;
+    //             }
+    //             else if (contactPoint.x < center.x &&
+    //                 (contactPoint.y < center.y + thisHeight / 2 && contactPoint.y > center.y - thisHeight / 2))
+    //             {
+    //                 collideFromLeft = true;
+    //             }
+    //             if (collideFromBottom || collideFromLeft || collideFromRight || collideFromTop)
+    //             {
+
+    //                 Debug.ClearDeveloperConsole();
+    //                 Debug.Log(collideFromLeft);
+    //                 Debug.Log(collideFromTop);
+    //                 Debug.Log(collideFromRight);
+    //                 Debug.Log(collideFromBottom);
+    //             }
+    //         }
+    //     }
 
 
 
