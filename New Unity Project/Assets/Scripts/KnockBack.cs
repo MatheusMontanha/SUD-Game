@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class KnockBack : MonoBehaviour
 {
-    public float thrust;
-    public float knockTime;
+    public FloatValue thrust;
+    public FloatValue knockTime;
+    public FloatValue damage;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,15 +31,15 @@ public class KnockBack : MonoBehaviour
             {
 
                 Vector2 difference = HIT.transform.position - transform.position;
-                difference = difference.normalized * thrust;
+                difference = difference.normalized * thrust.value;
                 HIT.AddForce(difference, ForceMode2D.Impulse);
-                if (other.gameObject.CompareTag("enemy"))
+                if (this.tag!="enemy" && other.gameObject.CompareTag("enemy") && other.isTrigger)
                 {
-                    other.GetComponent<Enemy>().Knock(HIT, knockTime);
+                    other.GetComponent<Enemy>().TakeHit(knockTime.value, damage.value);
                 }
-                if (other.gameObject.tag.Contains("Player"))
+                if (!this.tag.Contains("Player") && other.gameObject.tag.Contains("Player"))
                 {
-                    other.GetComponent<PlayerMovement>().Knock(knockTime);
+                    other.GetComponent<PlayerMovement>().TakeHit(knockTime.value, damage.value);
                 }
 
                 // StartCoroutine(KnockCo(HIT));

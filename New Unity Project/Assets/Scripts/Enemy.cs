@@ -6,36 +6,54 @@ public enum EnemyState
 {
     idle, walk, attack, stagger
 }
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
 
-    public int health;
+    public FloatValue maxHealth;
+    private float health;
     public string enemyName;
     public int baseAttack;
     public float moveSpeed;
 
+    private Rigidbody2D myRB2D;
     public EnemyState currentState;
     // Start is called before the first frame update
-    void Start()
-    {
 
+    protected void Start()
+    {
+        myRB2D = GetComponent<Rigidbody2D>();
+        health = maxHealth.value;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
+    protected abstract void Die();
+    void TakeDamage(float damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+    public void TakeHit(float knockTime, float damage)
+    {
+        
+        TakeDamage(damage);
+        if(health>0)
+        Knock(knockTime);
     }
 
-    public void Knock(Rigidbody2D myRB2D, float knockTime){
+    private void Knock(float knockTime)
+    {
         currentState = EnemyState.stagger;
-        StartCoroutine(KnockCo(myRB2D,knockTime) );
+        StartCoroutine(KnockCo(knockTime));
     }
-    private IEnumerator KnockCo(Rigidbody2D myRB2D, float knockTime)
+    private IEnumerator KnockCo(float knockTime)
     {
         if (myRB2D != null)
         {
             yield return new WaitForSeconds(knockTime);
+            Debug.Log("after");
             myRB2D.velocity = Vector2.zero;
             currentState = EnemyState.idle;
         }

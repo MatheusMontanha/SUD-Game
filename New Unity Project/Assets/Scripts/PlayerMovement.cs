@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -22,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private PlayerState playerState;
+    public FloatValue currentHealth;
+    public SSignal playerHealthSignal;
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -84,6 +87,28 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    internal void TakeHit(float knockTime, float damage)
+    {
+        if (playerState != PlayerState.stagger)
+        {
+            TakeDamage(damage);
+            if (currentHealth.value > 0)
+            {
+                Knock(knockTime);
+            }else{
+                this.gameObject.SetActive(false);
+            }
+
+        }
+    }
+
+    private void TakeDamage(float damage)
+    {
+        currentHealth.value -= damage;
+        playerHealthSignal.Raise();
+
+    }
+
     private IEnumerator AttackCo()
     {
         animator.SetBool("attacking", true);
@@ -126,9 +151,10 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-     public void Knock(float knockTime){
-        playerState=PlayerState.stagger;
-        StartCoroutine(KnockCo(knockTime) );
+    private void Knock(float knockTime)
+    {
+        playerState = PlayerState.stagger;
+        StartCoroutine(KnockCo(knockTime));
     }
     private IEnumerator KnockCo(float knockTime)
     {
