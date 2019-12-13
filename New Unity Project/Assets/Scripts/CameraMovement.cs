@@ -18,19 +18,33 @@ public class CameraMovement : MonoBehaviour
     }
 
     // Update is called once per frame
+    [System.Obsolete]
     void LateUpdate()
     {
+        if (player1.gameObject.active == true && player2.gameObject.active == true)
+        {
+            FixedCameraFollowSmooth();
+            return;
+        }
+        else
+        {
+            Transform target = transform;
+            if (player1.gameObject.active == false)
+            {
+                target = player2;
 
-        FixedCameraFollowSmooth();
-        // if (transform.position != player1.position)
-        // {
-        //     Vector3 newCameraPosition =  new Vector3(player1.position.x, player1.position.y, transform.position.z);
+            }
+            else if(player2.gameObject.active == false)
+            {
+                target = player1;
+            }
+            if (transform.position != target.position)
+            {
+                Vector3 targetPosition = new Vector3(target.position.x, target.position.y, transform.position.z);
+                transform.position = Vector3.Lerp(transform.position, targetPosition, smoothing);
+            }
+        }
 
-        //     transform.position = Vector3.Lerp(transform.position,
-        //     newCameraPosition,
-        //     smoothing);
-
-        // }
 
     }
 

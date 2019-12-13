@@ -29,7 +29,7 @@ public class Spawner : MonoBehaviour
             GameObject x = Instantiate(enemy, spawn, transform.rotation);
             x.GetComponent<Enemy>().AttatchCounter(enemyCounter);
             enemyCounter.value--;
-            Debug.Log(enemy.gameObject.name+ " Summoneds: "+(enemyCounter.initialValue-enemyCounter.value));
+            // Debug.Log(enemy.gameObject.name+ " Summoneds: "+(enemyCounter.initialValue-enemyCounter.value));
 
         }
     }

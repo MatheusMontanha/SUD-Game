@@ -19,17 +19,38 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode action1;
     public KeyCode action2;
 
-    // Start is called before the first frame update
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private PlayerState playerState;
+
+    public AudioClip actionAC;
+    public AudioClip takeHitAC;
+
+
+
+
+    internal void AddLife()
+    {
+        if (currentHealth.value <= currentHealth.initialValue - 2)
+        {
+            currentHealth.value += 2;
+        }
+        else
+        {
+            currentHealth.value = currentHealth.initialValue;
+        }
+        playerHealthSignal.Raise();
+    }
+
     public FloatValue currentHealth;
     public SSignal playerHealthSignal;
 
     public GameObject projectile;
     public bool attackWithProjectile;
 
-    public BooleanValue playerAlive;
+    public SSignal playerDeadSignal;
+
+    public GameObject playerDeathEffect;
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -40,7 +61,11 @@ public class PlayerMovement : MonoBehaviour
         playerState = PlayerState.walk;
     }
 
-    // Update is called once per frame
+    private void Play(AudioClip ac)
+    {
+        GetComponent<AudioSource>().Stop();
+        GetComponent<AudioSource>().PlayOneShot(ac);
+    }
     void Update()
     {
 
@@ -83,13 +108,14 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(action2) && playerState != PlayerState.attack && playerState != PlayerState.stagger && playerState != PlayerState.firing)
         {
+
+            Play(actionAC);
             if (attackWithProjectile)
             {
                 StartCoroutine(AttackWithProjectileCo());
             }
             else
             {
-
                 StartCoroutine(AttackCo());
             }
         }
@@ -100,14 +126,14 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    internal void TakeHit(float knockTime, float damage)
+    internal void TakeHit(float knockTime, float damage, Vector2 impulse)
     {
         if (playerState != PlayerState.stagger)
         {
             TakeDamage(damage);
             if (currentHealth.value > 0)
             {
-                Knock(knockTime);
+                Knock(knockTime, impulse);
             }
             else
             {
@@ -118,8 +144,14 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Die()
     {
-        this.playerAlive.value = false;
+        Debug.Log("player dead signal raised");
         this.gameObject.SetActive(false);
+        if (playerDeathEffect != null)
+        {
+            GameObject effect = Instantiate(playerDeathEffect, transform.position, Quaternion.identity);
+            Destroy(effect, 1f);
+        }
+        this.playerDeadSignal.Raise();
 
     }
 
@@ -197,8 +229,11 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    private void Knock(float knockTime)
+    private void Knock(float knockTime, Vector2 impulse)
     {
+        Play(takeHitAC);
+
+        myrigidbody.AddForce(impulse, ForceMode2D.Impulse);
         playerState = PlayerState.stagger;
         StartCoroutine(KnockCo(knockTime));
     }
@@ -206,9 +241,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (myrigidbody != null)
         {
+            GetComponent<SpriteRenderer>().color = Color.red;
             yield return new WaitForSeconds(knockTime);
             myrigidbody.velocity = Vector2.zero;
             playerState = PlayerState.walk;
+            GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
     private void LateUpdate()

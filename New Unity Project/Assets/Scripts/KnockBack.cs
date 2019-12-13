@@ -32,15 +32,17 @@ public class KnockBack : MonoBehaviour
 
                     Vector2 difference = HIT.transform.position - transform.position;
                     difference = difference.normalized * thrust.value;
-                        HIT.AddForce(difference, ForceMode2D.Impulse);
+                        // HIT.AddForce(difference, ForceMode2D.Impulse);
                     if (this.tag != "enemy" && other.gameObject.CompareTag("enemy") && other.isTrigger)
                     {
-                        other.GetComponent<Enemy>().TakeHit(knockTime.value, damage.value, this.tag);
+                        other.GetComponent<Enemy>().TakeHit(knockTime.value, damage.value,  difference, this.tag);
                     }
-                    if (!this.tag.Contains("Player") && other.gameObject.tag.Contains("Player"))
+                    if (!this.tag.Contains("Player") && other.gameObject.tag.Contains("Player") && !other.CompareTag("PlayerProjectile"))
                     {
 
-                        other.GetComponent<PlayerMovement>().TakeHit(knockTime.value, damage.value);
+                        // Debug.Log(this.gameObject.name+" vs "+other.gameObject.name);
+
+                        other.GetComponent<PlayerMovement>().TakeHit(knockTime.value, damage.value, difference);
                     }
 
                     // StartCoroutine(KnockCo(HIT));

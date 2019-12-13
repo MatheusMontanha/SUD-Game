@@ -21,6 +21,8 @@ public class Log : Enemy
     private Collider2D myCollider;
     private SpriteRenderer myRenderer;
     public GameObject deathEffect;
+    public GameObject life;
+
     new void Start()
     {
         base.Start();
@@ -57,6 +59,8 @@ public class Log : Enemy
         logState = LogState.SLEEPING;
     }
 
+
+    
     private void CheckDistance()
     {
         GameObject player1 = GameObject.FindWithTag("Player1");
@@ -82,12 +86,6 @@ public class Log : Enemy
         else
             target = player2.transform;
 
-
-
-
-
-
-
         if (Vector3.Distance(target.position, transform.position) <= chaseRadius && Vector3.Distance(target.position, transform.position) > attackRadius)
         {
             if (currentState == EnemyState.idle || currentState == EnemyState.walk && currentState != EnemyState.stagger)
@@ -101,47 +99,6 @@ public class Log : Enemy
                 }
                 if (logState == LogState.WAKE_UP)
                 {
-
-
-
-                    Debug.DrawRay(new Vector3(transform.position.x - this.myRenderer.bounds.extents.x, transform.position.y, transform.position.z), Vector3.up, Color.red, 2, false);
-                    Debug.DrawRay(new Vector3(transform.position.x + this.myRenderer.bounds.extents.x, transform.position.y, transform.position.z), Vector3.up, Color.blue, 2, false);
-                    RaycastHit2D rchit = Physics2D.Raycast(new Vector3(transform.position.x - this.myRenderer.bounds.extents.x, transform.position.y, transform.position.z), Vector3.up, 2, LayerMask.GetMask("Default"));
-                    if (rchit.collider != null)
-                    {
-                        Transform parede = rchit.collider.transform;
-
-                        if (Mathf.Abs(parede.position.x) - Mathf.Abs(transform.position.x) < Mathf.Abs(parede.position.y) - Mathf.Abs(transform.position.y))
-                        {
-                            // Debug.Log("x<y");
-                        }
-                        else
-                        {
-                            // Debug.Log("x>=y");
-
-                        }
-                        // if (parede.position.x <= transform.position.x)
-                        // {
-
-                        //     float extents = rchit.collider.bounds.extents.x;
-                        //     Vector3 destination = new Vector3(transform.position.x + extents, transform.position.y, transform.position.z);
-                        //     Vector3 temp1 = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
-                        //     myRigidBody.MovePosition(temp1);
-
-                        // }
-                        // else
-                        // {
-                        //     float extents = rchit.collider.bounds.extents.x;
-                        //     Vector3 destination = new Vector3(transform.position.x - extents, transform.position.z);
-                        //     Vector3 temp1 = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
-                        //     myRigidBody.MovePosition(temp1);
-
-                        // }
-                        // return;
-                    }
-
-
-
                     animator.SetBool("walking", true);
                     Vector3 temp = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
                     ChangeAnim(temp - transform.position);
@@ -206,12 +163,16 @@ public class Log : Enemy
     {
         currentState = EnemyState.idle;
         logState = LogState.BLOCKED;
-        // this.animator.SetBool("dead", true);
         this.gameObject.SetActive(false);
         if (deathEffect != null)
         {
             GameObject effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
             Destroy(effect, 1f);
+        }
+        int x = new System.Random().Next(3);
+        if (x == 0)
+        {
+            GameObject effect = Instantiate(life, transform.position, Quaternion.identity);
         }
         Destroy(this.gameObject, 1f);
         enemyCountdown.value--;

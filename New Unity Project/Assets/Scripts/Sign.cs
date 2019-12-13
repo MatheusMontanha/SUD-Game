@@ -34,6 +34,8 @@ public class Sign : MonoBehaviour
                 {
                     startedAction = PlayerCode.None;
                     dialogBox.SetActive(false);
+                Time.timeScale=1f;
+
                 }
             }
             else if(startedAction==PlayerCode.None)
@@ -41,6 +43,7 @@ public class Sign : MonoBehaviour
                 startedAction = PlayerCode.Player1;
                 dialogText.text = dialog;
                 dialogBox.SetActive(true);
+                Time.timeScale=0f;
             }
         }
         if ((Input.GetKeyDown(player2action) && player2InRange))
@@ -51,6 +54,8 @@ public class Sign : MonoBehaviour
                 {
                     startedAction = PlayerCode.None;
                     dialogBox.SetActive(false);
+                Time.timeScale=1f;
+
                 }
             }
             else if(startedAction==PlayerCode.None)
@@ -58,6 +63,8 @@ public class Sign : MonoBehaviour
                 startedAction = PlayerCode.Player2;
                 dialogText.text = dialog;
                 dialogBox.SetActive(true);
+                Time.timeScale=0f;
+
             }
         }
         if ((!player1InRange && startedAction==PlayerCode.Player1 || (!player2InRange && startedAction==PlayerCode.Player2)))

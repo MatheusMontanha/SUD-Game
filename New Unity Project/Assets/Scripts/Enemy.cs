@@ -27,6 +27,10 @@ public abstract class Enemy : MonoBehaviour
     Color originalColor; 
     public FloatValue enemyCountdown;
 
+    public FloatValue score;
+    public FloatValue givenPoints;
+
+
     protected void Start()
     {
         myRB2D = GetComponent<Rigidbody2D>();
@@ -64,6 +68,8 @@ public abstract class Enemy : MonoBehaviour
         }
         if (health <= 0)
         {
+            score.value += givenPoints.value;
+            Debug.Log(score.value);
             Die();
         }
     }
@@ -73,17 +79,18 @@ public abstract class Enemy : MonoBehaviour
         this.enemyCountdown = enemyCounter;
     }
 
-    public void TakeHit(float knockTime, float damage, string collisionTag)
+    public void TakeHit(float knockTime, float damage, Vector2 impulse, string collisionTag)
     {
 
         TakeDamage(damage, collisionTag);
         if (health > 0)
-            Knock(knockTime);
+            Knock(knockTime, impulse);
     }
 
-    private void Knock(float knockTime)
+    private void Knock(float knockTime, Vector2 impulse)
     {
         currentState = EnemyState.stagger;
+        myRB2D.AddForce(impulse, ForceMode2D.Impulse);
         StartCoroutine(KnockCo(knockTime));
     }
     private IEnumerator KnockCo(float knockTime)

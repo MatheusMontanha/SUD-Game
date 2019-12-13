@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79c5be7a106e16540abcb579ae73df7f, type: 3}
   m_Name: MaxYellowLogPerSpawner
   m_EditorClassIdentifier: 
-  initialValue: 10
-  value: 10
+  initialValue: 5
+  value: 5
